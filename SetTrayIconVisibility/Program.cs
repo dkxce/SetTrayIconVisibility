@@ -19,6 +19,15 @@ namespace TestTestBVSC
     {
         #region WinAPI
 
+        private const int HWND_BROADCAST = 0xffff;
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern int RegisterWindowMessage(string lpString);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        static extern bool SendNotifyMessage(int hWnd, int Msg, int wParam, int lParam);
+
+
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool PostMessage(IntPtr hWnd, [MarshalAs(UnmanagedType.U4)] uint Msg, IntPtr wParam, IntPtr lParam);
 
@@ -109,6 +118,7 @@ namespace TestTestBVSC
                 Marshal.FreeHGlobal(ptr);
                 SHChangeNotify(0x08000000 /* SHCNE_ASSOCCHANGED */, 0 /* SHCNF_IDLIST */, IntPtr.Zero, IntPtr.Zero);
                 SendMessage((IntPtr)0xFFFF/* HWND_BROADCAST */, 0x001A /* WM_SETTINGCHANGE */, IntPtr.Zero, IntPtr.Zero);
+                SendNotifyMessage(HWND_BROADCAST, RegisterWindowMessage("TaskbarCreated"), 0, 0);
             }
             catch { };            
         }
